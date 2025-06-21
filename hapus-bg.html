@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hapus Background</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    .wrapper {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .limit-box {
+      background: #e3fcef;
+      border: 1px solid #a6e4c5;
+      color: #256029;
+      padding: 10px 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .upload-label {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      background-color: #4a90e2;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 0 auto 16px;
+    }
+
+    input[type=file] {
+      display: none;
+    }
+
+    .preview {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .preview img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      flex: 1 1 calc(50% - 10px);
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-premium {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .btn-back {
+      background: #dcdcdc;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <h1>🖼️ Hapus Background</h1>
+    <div class="limit-box">
+      Limit tersisa: <span id="limit-count">0</span> foto
+    </div>
+
+    <label for="upload" class="upload-label">📤 Upload Foto</label>
+    <input type="file" id="upload" accept="image/*" />
+
+    <div class="preview" id="preview"></div>
+
+    <div class="btn-group">
+      <button class="btn btn-premium" onclick="location.href='premium.html'">💎 Premium Akses</button>
+      <button class="btn btn-back" onclick="location.href='index.html'">⬅ Kembali</button>
+    </div>
+  </div>
+
+  <script>
+    function getLimit() {
+      return parseInt(localStorage.getItem('bg_limit') || '3');
+    }
+
+    function setLimit(val) {
+      localStorage.setItem('bg_limit', val);
+    }
+
+    function updateLimitDisplay() {
+      document.getElementById('limit-count').textContent = getLimit();
+    }
+
+    if (window.location.search.includes("premium=true")) {
+      setLimit(getLimit() + 10);
+      window.history.replaceState({}, document.title, "hapus-background.html");
+    }
+
+    updateLimitDisplay();
+
+    document.getElementById('upload').addEventListener('change', function(e) {
+      let limit = getLimit();
+      if (limit <= 0) {
+        alert("Limit habis! Silakan beli Premium.");
+        return;
+      }
+
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('preview').innerHTML = `
+          <img src="${e.target.result}" alt="Preview Hapus BG">
+          <p>✅ Simulasi background dihapus</p>
+        `;
+        setLimit(limit - 1);
+        updateLimitDisplay();
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+
+</body>
+</html>
